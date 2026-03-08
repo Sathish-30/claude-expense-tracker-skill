@@ -27,9 +27,20 @@ with the latest data so the note always reflects all transactions for the day.
 
 ## Workflow
 
-### Step 1: Determine Today's Date
-Get today's date in `YYYY-MM-DD` format (e.g. `2026-03-08`).
+### Step 1: Determine Today's Date and Current IST Time
+
+Get the current date and time in **IST (Asia/Kolkata, UTC+5:30)**. This is critical —
+always derive the current time from the system's UTC clock and add 5 hours 30 minutes
+to get IST. Never guess or reuse a previously seen timestamp.
+
+- **Date**: format as `YYYY-MM-DD` (e.g. `2026-03-08`) — used for the note filename
+- **Time**: format as `HH:MM IST` in 24-hour format (e.g. `22:45 IST`) — used as the "Last updated" timestamp in the note
+
 The target note path will be: `Daily Expenses/YYYY-MM-DD.md`
+
+> ⚠️ The "Last updated" time must reflect the actual current time at the moment the
+> skill runs, not the time of any email or any previously written note. Compute it
+> fresh every time the skill is triggered.
 
 ### Step 2: Fetch Today's Transaction Emails
 Search Gmail for financial transaction emails received today using:
@@ -78,7 +89,7 @@ Construct the note using this exact template:
 
 ```markdown
 # Daily Expenses — YYYY-MM-DD
-> Last updated: HH:MM IST
+> Last updated: HH:MM IST  
 
 ## Summary
 | Metric | Value |
@@ -105,7 +116,7 @@ Construct the note using this exact template:
 ---
 
 ## Raw Sources
-<!-- Email subjects used as source for this note -->
+
 - HDFC Bank InstaAlerts: "Account update for your HDFC Bank A/c"
 ```
 
