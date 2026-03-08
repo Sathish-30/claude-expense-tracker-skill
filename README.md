@@ -1,6 +1,6 @@
 # 🧾 claude-daily-expense-tracker-skill
 
-A **Claude Skill** that automatically scans your Gmail for today's financial transaction emails — UPI credits, UPI debits, bank alerts, and credit card transactions — and saves a clean, structured daily expense note directly into your Obsidian vault under `Daily Expenses/YYYY-MM-DD.md`.
+A **Claude Skill** that automatically scans your Gmail for today's financial transaction emails - UPI credits, UPI debits, bank alerts, and credit card transactions - and saves a clean, structured daily expense note directly into your Obsidian vault under `Daily Expenses/YYYY-MM-DD.md`.
 
 Just say **"log my expenses"** or **"track today's transactions"** and Claude does the rest.
 
@@ -10,9 +10,9 @@ Just say **"log my expenses"** or **"track today's transactions"** and Claude do
 
 - 📧 Scans Gmail for today's bank/UPI transaction emails automatically
 - 💚 Separates **credited** and **debited** transactions into clean tables
-- 🏦 Detects transaction type — **UPI**, **Credit Card**, or **Bank Transfer**
+- 🏦 Detects transaction type - **UPI**, **Credit Card**, or **Bank Transfer**
 - 📓 Saves a structured daily note into your **Obsidian vault**
-- 🔁 Call it twice in a day — it overwrites the note with the latest data
+- 🔁 Call it twice in a day - it overwrites the note with the latest data
 - 🏷️ Captures amount, party name, bank, UPI reference number, and time
 
 ---
@@ -66,7 +66,7 @@ Docker will run the MCP server as a container that bridges Claude Desktop to you
 **a. Connect Docker MCP to Claude Desktop**
 
 1. Open **Claude Desktop** → `Settings` → `Developer` → `MCP Servers`
-2. Add the Docker MCP server endpoint (Docker Desktop provides the exact config snippet — copy it from the MCP Toolkit panel)
+2. Add the Docker MCP server endpoint (Docker Desktop provides the exact config snippet - copy it from the MCP Toolkit panel)
 3. Restart Claude Desktop
 
 **b. Connect Gmail to Claude Desktop**
@@ -101,13 +101,13 @@ Claude should list any notes already in that folder (or say it's empty).
 
 ### 4. Install the Skill
 
-**Option A — Download the `.skill` file (recommended)**
+**Option A - Download the `.skill` file (recommended)**
 
 1. Go to the [Releases](../../releases) page and download `daily-expense-tracker.skill`
 2. In Claude Desktop, go to `Settings` → `Skills`
 3. Click **Install Skill** and select the downloaded `.skill` file
 
-**Option B — Clone and add manually**
+**Option B - Clone and add manually**
 
 ```bash
 git clone https://github.com/your-username/claude-daily-expense-tracker-skill.git
@@ -140,7 +140,7 @@ Once everything is set up, simply tell Claude:
 Claude will scan your Gmail, extract all financial transactions for today, and save a note like this to `Daily Expenses/2026-03-08.md`:
 
 ```markdown
-# Daily Expenses — 2026-03-08
+# Daily Expenses - 2026-03-08
 > Last updated: 16:30 IST
 
 ## Summary
@@ -198,4 +198,4 @@ claude-daily-expense-tracker-skill/
 
 ## 📄 License
 
-MIT License — feel free to use, modify, and distribute.
+MIT License - feel free to use, modify, and distribute.
