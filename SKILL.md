@@ -4,7 +4,7 @@ description: >
   Scans Gmail for today's financial transaction emails (UPI credits, UPI debits,
   bank credits, bank debits, credit card transactions) and saves a structured
   daily expense note into Obsidian under the "Daily Expenses" folder.
-  Overwrites the existing note if called more than once on the same day.
+  Always appends exactly ONE entry per invocation. Never deletes the file.
   Use this skill whenever the user says "log my expenses", "track today's transactions",
   "save my expenses to Obsidian", "update my daily expense note", "record today's payments",
   or anything related to capturing daily financial activity into Obsidian.
@@ -14,14 +14,16 @@ description: >
 
 This skill pulls today's financial transaction emails from Gmail and writes a
 clean, structured expense note into Obsidian under `Daily Expenses/YYYY-MM-DD.md`.
-If that note already exists (i.e. skill was run earlier today), it is overwritten
-with the latest data so the note always reflects all transactions for the day.
+
+> ⚠️ CRITICAL RULES — must be followed strictly every invocation:
+> 1. **ONE append only** — call `obsidian_append_content` exactly once per skill run. Never call it twice.
+> 2. **Never delete** the Obsidian file. Do not call `obsidian_delete_file` under any circumstance.
+> 3. Collect ALL emails first, then build the note, then write once.
 
 ## Required Tools
 - `search_gmail_messages` — fetch emails
-- `obsidian_append_content` — write/overwrite the note (used with full content replacement)
+- `obsidian_append_content` — write the note (called exactly ONCE per run)
 - `obsidian_list_files_in_dir` — check if today's note already exists
-- `obsidian_get_file_contents` — read existing note if needed
 
 ---
 
@@ -42,14 +44,16 @@ The target note path will be: `Daily Expenses/YYYY-MM-DD.md`
 > skill runs, not the time of any email or any previously written note. Compute it
 > fresh every time the skill is triggered.
 
-### Step 2: Fetch Today's Transaction Emails
-Search Gmail for financial transaction emails received today using:
+### Step 2: Fetch ALL of Today's Transaction Emails
 
+Run both searches below and collect results from BOTH before doing anything else.
+
+Search 1 — unread emails:
 ```
 query: is:unread (credited OR debited OR "UPI" OR "transaction" OR "payment") after:YYYY/MM/DD
 ```
 
-Also search for read emails in case the user already opened them:
+Search 2 — all emails (including already-read ones):
 ```
 query: (credited OR debited OR UPI OR transaction OR "credit card") after:YYYY/MM/DD
 ```
@@ -59,6 +63,8 @@ Collect from each matching email:
 - Subject
 - Date/time
 - Snippet (for amount and transaction details)
+
+Deduplicate by message ID — if the same email appears in both searches, count it once.
 
 ### Step 3: Extract Transaction Details
 For each email, parse out:
@@ -74,22 +80,13 @@ For each email, parse out:
 
 Skip emails that don't contain a clear monetary amount.
 
-### Step 4: Check if Note Already Exists
-Use `obsidian_list_files_in_dir` on `Daily Expenses/` to check if `YYYY-MM-DD.md` already exists.
+### Step 4: Build the Complete Note
 
-- If it **exists**: the skill will overwrite it by writing a completely fresh note using `obsidian_append_content` after deleting old content. Since Obsidian MCP only supports append, use a clear overwrite strategy: write a header comment `<!-- updated: HH:MM -->` at the top so each save is timestamped.
-- If it **does not exist**: create it fresh.
-
-> Note: Because the MCP tool only supports `append_content`, overwrite is achieved by
-> writing the complete note content each time (the skill manages this by always
-> constructing the full note from scratch from today's emails).
-
-### Step 5: Build the Note
-Construct the note using this exact template:
+Construct the full note content in memory using this exact template:
 
 ```markdown
 # Daily Expenses — YYYY-MM-DD
-> Last updated: HH:MM IST  
+> Last updated: HH:MM IST
 
 ## Summary
 | Metric | Value |
@@ -116,7 +113,7 @@ Construct the note using this exact template:
 ---
 
 ## Raw Sources
-
+<!-- Email subjects used as source for this note -->
 - HDFC Bank InstaAlerts: "Account update for your HDFC Bank A/c"
 ```
 
@@ -127,15 +124,17 @@ Rules for building the note:
 - Calculate totals accurately — sum all credited amounts and all debited amounts separately
 - Net = Total Credited - Total Debited
 
-### Step 6: Write to Obsidian
-Use `obsidian_append_content` with the full note content to write to:
+### Step 5: Write to Obsidian — EXACTLY ONCE
+
+Call `obsidian_append_content` **once and only once** with the full note content to:
 ```
 Daily Expenses/YYYY-MM-DD.md
 ```
 
-Since this tool appends, if the file already existed, the new version will be appended below the old. This is acceptable — the most recent version is always at the bottom and clearly timestamped with "Last updated".
+> ⚠️ Do NOT call `obsidian_append_content` a second time for any reason — not to fix,
+> not to retry, not to add a separator. One call. Done.
 
-### Step 7: Confirm to User
+### Step 6: Confirm to User
 After writing, respond with a short confirmation:
 
 > ✅ Expense note saved to `Daily Expenses/YYYY-MM-DD.md`
