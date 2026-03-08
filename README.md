@@ -196,12 +196,6 @@ claude-daily-expense-tracker-skill/
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! If your bank's emails aren't being parsed correctly, feel free to open an issue with a redacted sample email (remove personal details) and we'll add support for it.
-
----
-
 ## 📄 License
 
 MIT License — feel free to use, modify, and distribute.
