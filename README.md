@@ -115,7 +115,7 @@ git clone https://github.com/your-username/claude-daily-expense-tracker-skill.gi
 
 Then copy the `SKILL.md` file:
 
-1. In Claude Desktop, go to `Settings` → `Skills` → **Add Skill**
+1. In Claude Desktop, go to `Custmoize` → `Skills` → **Add Skill**
 2. Point it to the `daily-expense-tracker/SKILL.md` file from the cloned repo
 
 ---
