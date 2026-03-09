@@ -67,7 +67,25 @@ Collect from each matching email:
 Deduplicate by message ID — if the same email appears in both searches, count it once.
 
 ### Step 3: Extract Transaction Details
-For each email, parse out:
+
+#### ⚠️ Confirmed vs Pending — CRITICAL RULE
+**Only include transactions that have ALREADY settled in the bank account.**
+
+**EXCLUDE (skip entirely) — Pending/Initiated transactions:**
+- IRCTC cancellation emails saying "Please collect Rs. X from agent" — this means the refund is *initiated*, not received
+- Any email with phrases like: "refund initiated", "refund will be processed", "collect from agent", "will be credited within X days", "processing your refund"
+- Payment gateway confirmations of *outgoing* refund initiation
+- Ticket booking cancellation notifications without a bank credit confirmation
+
+**INCLUDE (confirmed) — Settled transactions:**
+- Bank debit alerts (e.g. HDFC InstaAlert: "Rs. X debited from account") — money is gone, confirmed
+- Bank credit alerts (e.g. "Rs. X credited to your account XXXX") — money is received, confirmed
+- UPI debit/credit alerts from the bank itself (not from a merchant)
+- Credit card transaction alerts
+
+**Rule of thumb**: If the email comes from the *bank's own alert system* (e.g. `alerts@hdfcbank.bank.in`), it's confirmed. If it comes from a *merchant or service* (e.g. IRCTC, Swiggy, Amazon), treat it as a notification only — verify it's a confirmed bank-side event before including.
+
+For each confirmed email, parse out:
 
 | Field | How to extract |
 |-------|---------------|
@@ -79,6 +97,7 @@ For each email, parse out:
 | **Reference** | UPI ref number or transaction ID if present in snippet |
 
 Skip emails that don't contain a clear monetary amount.
+Skip emails that represent pending/initiated transactions per the rules above.
 
 ### Step 4: Build the Complete Note
 
@@ -169,3 +188,5 @@ After writing, respond with a short confirmation:
 - **Ambiguous direction** — if unclear, default to Debited and add a ⚠️ flag in the Reference column
 - **Non-INR amounts** — skip or note as `Foreign currency` in the Type column
 - **Duplicate emails** — if two emails describe the same transaction (same ref number), include only once
+- **IRCTC / merchant refund emails** — phrases like "Please collect Rs. X from agent" or "refund initiated" mean the money has NOT been received yet. **Do NOT include these as credits.** Only include a refund when the bank itself sends a credit alert.
+- **Pending refunds** — if you skip any transactions due to pending status, mention them briefly in the confirmation message to the user so they know what was excluded and why.
