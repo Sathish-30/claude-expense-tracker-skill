@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daily Expense Tracker"
+  short_description: "Track Gmail transactions into a daily Obsidian expense note."
+  default_prompt: "Log today\\'s transactions from Gmail into my Obsidian Daily Expenses note."
